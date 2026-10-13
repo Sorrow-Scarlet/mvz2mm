@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Name=mvz2mm
+Comment=A mvz2 mod manager
+# The Exec line includes %u to pass the URL to the application
+Exec=/usr/local/bin/mvz2mm.exe %u
+Terminal=false
+Type=Application
+Icon=mvz2mm.exe
+Categories=Utility;
+StartupWMClass=mvz2mm.exe
+
+ 
