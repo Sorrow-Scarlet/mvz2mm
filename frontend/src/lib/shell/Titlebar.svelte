@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { Window } from "@wailsio/runtime";
 
   let { title = "MVZ2 Mod 管理器" } = $props();
@@ -15,9 +15,11 @@
   };
 </script>
 
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
   id="titlebar-container"
-  class="flex h-10 select-none items-center justify-between bg-neutral-900 text-neutral-200 [--wails-draggable:drag]"
+  class="flex h-9 select-none items-center justify-between border-b border-border bg-background text-foreground [--wails-draggable:drag] shrink-0"
+  ondblclick={toggleMax}
 >
   <div id="title-container" class="gap-2 pl-3 flex items-center">
     <span id="title-text" class="text-[13px] font-medium">{title}</span>
@@ -29,7 +31,7 @@
   >
     <button
       title="minimize"
-      class="w-12 h-full text-neutral-300 transition-colors hover:bg-neutral-700"
+      class="w-12 h-full text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
       onclick={Window.Minimise}
       ><svg class="mx-auto h-3 w-3" viewBox="0 0 12 12">
         <rect x="1" y="5.5" width="10" height="1" fill="currentColor" />
@@ -38,8 +40,8 @@
 
     <button
       title="maximise"
-      class="w-12 h-full text-neutral-300 transition-colors
-             hover:bg-neutral-700"
+      class="w-12 h-full text-muted-foreground transition-colors
+             hover:bg-accent hover:text-accent-foreground"
       onclick={toggleMax}
     >
       {#if maximised}
@@ -51,7 +53,7 @@
           stroke-width="1"
         >
           <rect x="3" y="1" width="8" height="8" />
-          <rect x="1" y="3" width="8" height="8" fill="#171717" />
+          <rect x="1" y="3" width="8" height="8" class="fill-background" />
         </svg>
       {:else}
         <svg
@@ -68,8 +70,8 @@
 
     <button
       title="close"
-      class="w-12 h-full text-neutral-300 transition-colors
-             hover:bg-red-600 hover:text-white"
+      class="w-12 h-full text-muted-foreground transition-colors
+             hover:bg-destructive hover:text-destructive-foreground"
       onclick={Window.Close}
     >
       <svg
