@@ -76,7 +76,10 @@
         </SidebarMenuButton>
         <SidebarMenuButton
           isActive={false}
-          onclick={copyToClipboard}
+          onclick={() => {
+            copyToClipboard();
+            toast.info("已复制版本号至剪切板");
+          }}
           class="flex"
         >
           <span>{version}</span>

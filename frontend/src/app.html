@@ -1,6 +1,13 @@
 <!doctype html>
 <html>
   <head>
+    <script>
+      let s = localStorage.getItem("dark-mode") || "自动";
+      let dark =
+        s == "深色" ||
+        (s == "自动" && matchMedia("(prefers-color-scheme: dark)").matches);
+      document.documentElement.classList.toggle("dark", dark);
+    </script>
     <link rel="icon" href="data:," />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

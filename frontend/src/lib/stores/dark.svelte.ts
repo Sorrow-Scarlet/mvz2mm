@@ -11,7 +11,11 @@ export type DarkState = (typeof darkOptions)[number]["id"];
 
 const order = ["深色", "浅色", "自动"];
 
-export const currentDark = $state({ state: "自动" as DarkState });
+const loadState = () => {
+  const v = localStorage.getItem("dark-mode");
+  return v == "深色" || v == "浅色" || v == "自动" ? v : "自动";
+};
+export const currentDark = $state({ state: loadState() });
 
 export const changeDark = () => {
   const i = order.indexOf(currentDark.state);
