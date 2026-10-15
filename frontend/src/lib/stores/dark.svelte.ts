@@ -10,3 +10,5 @@ export const darkOptions = [
 export type DarkState = (typeof darkOptions)[number]["id"];
 
 export const currentDark = $state({ state: "auto" as DarkState });
+
+export const changeDark = () => {};

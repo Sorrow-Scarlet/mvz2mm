@@ -5,8 +5,6 @@
   import Titlebar from "#lib/shell/Titlebar.svelte";
   import Sidebar from "#lib/shell/Sidebar.svelte";
   import SidebarProvider from "#lib/components/ui/sidebar/sidebar-provider.svelte";
-  import SidebarTrigger from "#lib/components/ui/sidebar/sidebar-trigger.svelte";
-
   let { children }: LayoutProps = $props();
 </script>
 

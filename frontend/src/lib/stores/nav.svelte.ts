@@ -2,16 +2,12 @@ import { LayoutGrid, Package, Globe, Settings } from "@lucide/svelte";
 import type { Component } from "svelte";
 
 export const navItems = [
-  { id: "dashboard", title: "总览", icon: LayoutGrid },
-  { id: "modmanage", title: "Mod 管理", icon: Package },
-  { id: "netsource", title: "网络源", icon: Globe },
-  { id: "settings", title: "设置", icon: Settings },
+  { title: "总览", url: "/dashboard", icon: LayoutGrid },
+  { title: "Mod 管理", url: "/modmanage", icon: Package },
+  { title: "网络源", url: "/netsource", icon: Globe },
+  { title: "设置", url: "/settings", icon: Settings },
 ] as const satisfies ReadonlyArray<{
-  id: string;
   title: string;
+  url: string;
   icon: Component;
 }>;
-
-export type PageID = (typeof navItems)[number]["id"];
-
-export const nav = $state({ page: "dashboard" as PageID });

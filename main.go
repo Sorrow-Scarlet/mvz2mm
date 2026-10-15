@@ -62,7 +62,7 @@ func main() {
 			TitleBar:                application.MacTitleBarHiddenInset,
 		},
 		BackgroundColour: application.NewRGB(6, 7, 15),
-		URL:              "/",
+		URL:              "/dashboard",
 		Frameless:        true,
 		Windows: application.WindowsWindow{
 			NonClientRegionSupport:     true,
