@@ -10,18 +10,21 @@
   import { Sidebar } from "../components/ui/sidebar";
   import { page } from "$app/state";
   import { toast } from "svelte-sonner";
+  import {
+    changeDark,
+    currentDark,
+    darkOptions,
+  } from "#lib/stores/dark.svelte.ts";
 
-  let version = $state("unknown");
+  let version = $state("0.0.0");
 
   onMount(() => {
     GetCurrentVersion()
       .then((v) => (version = v))
-      .catch(() =>
-        toast("错误", {
-          description: "获取版本号失败",
-          action: { label: "x", onClick: () => {} },
-        }),
-      );
+      .catch(() => {
+        toast.error("无法获取版本信息");
+        version = "error";
+      });
   });
   const copyToClipboard = () => {};
 </script>
@@ -54,7 +57,23 @@
   <SidebarFooter>
     <SidebarMenu>
       <SidebarMenuItem class="flex flex-row h-10 select-none">
-        <SidebarMenuButton class="flex-1 shrink-0">i</SidebarMenuButton>
+        <SidebarMenuButton
+          onclick={() => {
+            changeDark();
+            toast.info(`当前模式: ${currentDark.state}`);
+          }}
+          class="w-8"
+        >
+          {#snippet child({ props })}
+            <button {...props}>
+              {#each darkOptions as opt (opt.id)}
+                {#if opt.id === currentDark.state}
+                  <opt.icon size={16} />
+                {/if}
+              {/each}
+            </button>
+          {/snippet}
+        </SidebarMenuButton>
         <SidebarMenuButton
           isActive={false}
           onclick={copyToClipboard}

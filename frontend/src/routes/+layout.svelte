@@ -5,7 +5,13 @@
   import Titlebar from "#lib/shell/Titlebar.svelte";
   import Sidebar from "#lib/shell/Sidebar.svelte";
   import SidebarProvider from "#lib/components/ui/sidebar/sidebar-provider.svelte";
+  import { Toaster } from "svelte-sonner";
+  import { isDark } from "#lib/stores/dark.svelte.ts";
   let { children }: LayoutProps = $props();
+
+  $effect(() => {
+    document.documentElement.classList.toggle("dark", isDark());
+  });
 </script>
 
 <SidebarProvider>
@@ -17,6 +23,7 @@
     <div id="window-content" class="flex min-h-0 flex-1 overflow-hidden">
       <Sidebar />
       <main class="min-w-0 flex-1 overflow-y-auto">
+        <Toaster />
         {@render children()}
       </main>
     </div>
