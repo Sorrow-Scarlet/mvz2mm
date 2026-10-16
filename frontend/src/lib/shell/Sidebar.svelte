@@ -6,7 +6,7 @@
   import SidebarMenu from "#lib/components/ui/sidebar/sidebar-menu.svelte";
   import { navItems } from "#lib/stores/nav.svelte.ts";
   import { onMount } from "svelte";
-  import { GetCurrentVersion } from "../../../bindings/mvz2mm/internal/dashboard/versionservice";
+  import { GetCurrentVersion } from "../../../bindings/mvz2mm/internal/settings/versionservice";
   import { Sidebar } from "../components/ui/sidebar";
   import { page } from "$app/state";
   import { toast } from "svelte-sonner";

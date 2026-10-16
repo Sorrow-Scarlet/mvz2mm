@@ -3,9 +3,9 @@ package main
 import (
 	"embed"
 	"log/slog"
-	"mvz2mm/internal/dashboard"
 	"mvz2mm/internal/modmanage"
 	"mvz2mm/internal/platform"
+	"mvz2mm/internal/settings"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
 )
@@ -34,9 +34,9 @@ func main() {
 		Description: "A MVZ2 Mod Manager",
 		Services: []application.Service{
 			application.NewService(&platform.PlatformService{}),
-			application.NewService(&modmanage.DirService{}),
-			application.NewService(&dashboard.StatusService{}),
-			application.NewService(&dashboard.VersionService{}),
+			application.NewService(&modmanage.ModService{}),
+			application.NewService(&settings.DirService{}),
+			application.NewService(&settings.VersionService{}),
 		},
 		Assets: application.AssetOptions{
 			Handler: application.AssetFileServerFS(assets),

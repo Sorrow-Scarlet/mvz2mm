@@ -1,4 +1,4 @@
-package modmanage
+package settings
 
 import (
 	"log/slog"

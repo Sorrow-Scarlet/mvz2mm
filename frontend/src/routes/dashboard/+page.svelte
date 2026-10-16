@@ -5,12 +5,12 @@
   import CardHeader from "#lib/components/ui/card/card-header.svelte";
   import CardTitle from "#lib/components/ui/card/card-title.svelte";
   import Card from "#lib/components/ui/card/card.svelte";
-  import {
-    GetEnabledCount,
-    GetTotalCount,
-  } from "../../../bindings/mvz2mm/internal/dashboard/statusservice";
   import { onMount } from "svelte";
   import { toast } from "svelte-sonner";
+  import {
+    GetModEnabled,
+    GetModTotal,
+  } from "../../../bindings/mvz2mm/internal/modmanage/modservice";
 
   type Status = "loading" | "ok" | "error";
 
@@ -20,7 +20,7 @@
   let modEnabledStatus = $state<Status>("loading");
 
   onMount(() => {
-    GetTotalCount()
+    GetModTotal()
       .then((c) => {
         modTotal = c;
         modTotalStatus = "ok";
@@ -29,7 +29,7 @@
         modTotalStatus = "error";
         toast.error(`无法获取总Mod数: ${e}`);
       });
-    GetEnabledCount()
+    GetModEnabled()
       .then((c) => {
         modEnabled = c;
         modEnabledStatus = "ok";

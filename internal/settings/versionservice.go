@@ -1,4 +1,4 @@
-package dashboard
+package settings
 
 type VersionService struct{}
 
