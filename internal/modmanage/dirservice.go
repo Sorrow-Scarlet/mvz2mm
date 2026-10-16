@@ -3,29 +3,50 @@ package modmanage
 import (
 	"log/slog"
 	"os"
+	"path"
 	"path/filepath"
 )
 
-type DirService struct{}
-
-func (d *DirService) GetApplicationDir() (string, error) {
-	return os.Getwd()
+type DirService struct {
+	GameDir string `json:"game_dir"`
+	ModDir  string `json:"mod_dir"`
 }
 
-func (d *DirService) JoinMVZ2Path(dir, MVZ2ExeName string) string {
-	return filepath.Join(dir, MVZ2ExeName)
-}
+func (d *DirService) GetGameDir() string {
 
-func (d *DirService) IsPathExist(path string) bool {
-	_, err := os.Stat(path)
+	const mvz2DataFolder = "MinecraftVSZombies2_Data"
+
+	currentDir, err := os.Getwd()
 	if err != nil {
-		slog.Info("checking path", "err", err)
-		return false
+		slog.Error("get current app dir", "err", err)
+		return ""
 	}
-	return true
+	if isGameDir(currentDir, mvz2DataFolder) {
+		d.GameDir = currentDir
+		return d.GameDir
+	}
+
+	return ""
 }
 
-func (d *DirService) ChooseGameDir() {}
+func (d *DirService) GetModDir(gameDir string) string {
+	if gameDir == "" {
+		slog.Warn("gameDir is empty!")
+		return ""
+	}
+
+	tryPath := path.Join(gameDir, "BepInEx", "plugins")
+	info, err := os.Stat(tryPath)
+	if err != nil {
+		slog.Warn("ModDir dose not exists!", "err", err, "dir", tryPath)
+		return ""
+	}
+	if info.IsDir() {
+		d.ModDir = tryPath
+		return d.ModDir
+	}
+	return ""
+}
 
 // isGameDir 接收dataFolder和已有路径为参数，确认是否为MVZ2目录
 //

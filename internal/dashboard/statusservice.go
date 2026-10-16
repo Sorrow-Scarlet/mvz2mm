@@ -1,7 +1,14 @@
 package dashboard
 
+import "errors"
+
 type StatusService struct{}
 
-func GetTotalCount() int { panic("WIP") }
+func (s *StatusService) GetTotalCount() (int, error) {
 
-func GetEnabledCount() int { panic("WIP") }
+	return 1, nil
+}
+
+func (s *StatusService) GetEnabledCount() (int, error) {
+	return 0, errors.New("WIP")
+}
