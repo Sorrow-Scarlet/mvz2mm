@@ -2,10 +2,15 @@ package main
 
 import (
 	"embed"
+	"io"
 	"log/slog"
 	"mvz2mm/internal/modmanage"
 	"mvz2mm/internal/platform"
 	"mvz2mm/internal/settings"
+	"os"
+	"path/filepath"
+	"strings"
+	"time"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
 )
@@ -14,12 +19,27 @@ import (
 var assets embed.FS
 
 func init() {
-	// 按照如下格式注册API
-	// application.RegisterEvent[string]("time")
-}
+	isProd := !strings.Contains(settings.AppVersion, "-") &&
+		strings.Count(settings.AppVersion, ".") == 2
 
-func init() {
-	// TODO: 使用slog替换原有日志
+	dir := "./logs"
+	_ = os.MkdirAll(dir, 0o755)
+
+	f, err := os.OpenFile(
+		filepath.Join(dir, "mvz2mm-"+time.Now().Format("20060102150405")+".log"),
+		os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o644)
+
+	if err != nil {
+		slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, nil)))
+		return
+	}
+
+	if isProd {
+		slog.SetDefault(slog.New(slog.NewJSONHandler(f, nil)))
+	} else {
+		slog.SetDefault(slog.New(slog.NewTextHandler(
+			io.MultiWriter(os.Stdout, f), nil)))
+	}
 }
 
 func main() {

@@ -39,11 +39,17 @@
         toast.error(`无法获取已启用Mod数: ${e}`);
       });
   });
+
+  let mvz2Info = $state("Empty");
+  const mvz2InfoClicked = () => {
+    navigator.clipboard.writeText(mvz2Info);
+    toast.info("已成功复制MVZ2信息");
+  };
 </script>
 
 <div id="dashboard-container" class="flex flex-col p-6 gap-4">
   <PageHint title="总览" hint="Mod状态与快捷入口" />
-  <div id="status-container" class="flex flex-row gap-4">
+  <div id="status-container" class="flex flex-row gap-4 select-none">
     <Card class="w-full">
       <CardHeader>
         <CardTitle
@@ -63,11 +69,11 @@
       </CardHeader>
     </Card>
   </div>
-  <Card class="w-full">
+  <Card class="w-full select-none" onclick={mvz2InfoClicked}>
     <CardHeader>
       <CardTitle>MVZ2信息</CardTitle>
     </CardHeader>
-    <CardContent></CardContent>
+    <CardContent>{mvz2Info}</CardContent>
   </Card>
   <Card class="w-full">
     <CardHeader>
