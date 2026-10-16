@@ -26,7 +26,12 @@
         version = "error";
       });
   });
-  const copyToClipboard = () => {};
+  const copyToClipboard = async () => {
+    await navigator.clipboard.writeText(version).catch((e) => {
+      toast.error(`无法复制到剪切板: ${e}`);
+    });
+    toast.info("已复制版本号");
+  };
 </script>
 
 <Sidebar class="flex px-2 font-medium text-2xl" collapsible="none">
@@ -76,10 +81,7 @@
         </SidebarMenuButton>
         <SidebarMenuButton
           isActive={false}
-          onclick={() => {
-            copyToClipboard();
-            toast.info("已复制版本号至剪切板");
-          }}
+          onclick={copyToClipboard}
           class="flex"
         >
           <span>{version}</span>
