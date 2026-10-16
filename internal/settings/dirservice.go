@@ -1,6 +1,7 @@
 package settings
 
 import (
+	"errors"
 	"log/slog"
 	"os"
 	"path"
@@ -12,9 +13,19 @@ type DirService struct {
 	ModDir  string `json:"mod_dir"`
 }
 
-func (d *DirService) GetGameDir() string {
+const mvz2DataFolder = "MinecraftVSZombies2_Data"
 
-	const mvz2DataFolder = "MinecraftVSZombies2_Data"
+func (d *DirService) GetGameDir() {}
+
+func (d *DirService) SetGameDir(path string) error {
+	if !isGameDir(path, mvz2DataFolder) {
+		return errors.New("找不到MVZ2数据文件夹")
+	}
+	d.GameDir = path
+	return nil
+}
+
+func (d *DirService) CheckGameDir() string {
 
 	currentDir, err := os.Getwd()
 	if err != nil {
@@ -29,13 +40,13 @@ func (d *DirService) GetGameDir() string {
 	return ""
 }
 
-func (d *DirService) GetModDir(gameDir string) string {
-	if gameDir == "" {
+func (d *DirService) GetModDir() string {
+	if d.GameDir == "" {
 		slog.Warn("gameDir is empty!")
 		return ""
 	}
 
-	tryPath := path.Join(gameDir, "BepInEx", "plugins")
+	tryPath := path.Join(d.GameDir, "BepInEx", "plugins")
 	info, err := os.Stat(tryPath)
 	if err != nil {
 		slog.Warn("ModDir dose not exists!", "err", err, "dir", tryPath)

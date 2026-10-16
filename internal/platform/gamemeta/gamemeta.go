@@ -1,4 +1,4 @@
-package readmeta
+package gamemeta
 
 import (
 	"log/slog"
@@ -6,8 +6,8 @@ import (
 )
 
 type GameMetaInfo struct {
-	FileVersion    string `json:"file_version"`
-	ProductVersion string `json:"product_version"`
+	ExecutableFileVersion    string `json:"file_version"`
+	ExecutableProductVersion string `json:"product_version"`
 }
 
 func Read(exePath string) (GameMetaInfo, error) {

@@ -1,6 +1,6 @@
 //go:build windows
 
-package readmeta
+package gamemeta
 
 import "github.com/bi-zone/go-fileversion"
 
@@ -13,8 +13,8 @@ func readMeta(exePath string) (GameMetaInfo, error) {
 		return result, err
 	}
 	// 赋值
-	result.FileVersion = f.FileVersion()
-	result.ProductVersion = f.ProductVersion()
+	result.ExecutableFileVersion = f.FileVersion()
+	result.ExecutableProductVersion = f.ProductVersion()
 
 	// 返回
 	return result, nil

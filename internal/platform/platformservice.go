@@ -1,8 +1,8 @@
 package platform
 
 import (
+	"mvz2mm/internal/platform/gamemeta"
 	"mvz2mm/internal/platform/opendir"
-	"mvz2mm/internal/platform/readmeta"
 )
 
 type PlatformService struct{}
@@ -12,6 +12,6 @@ func (p *PlatformService) OpenDir(dir string) error {
 	return opendir.Open(dir)
 }
 
-func (p *PlatformService) ReadMeta(exePath string) (readmeta.GameMetaInfo, error) {
-	return readmeta.Read(exePath)
+func (p *PlatformService) ReadMeta(exePath string) (gamemeta.GameMetaInfo, error) {
+	return gamemeta.Read(exePath)
 }
