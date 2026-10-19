@@ -4,106 +4,118 @@ import (
 	"errors"
 	"log/slog"
 	"os"
-	"path"
 	"path/filepath"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
 )
 
+const (
+	mvz2DataDir    = "MinecraftVSZombies2_Data"
+	modDllDir      = "BepInEx/plugins"
+	modResourceDir = mvz2DataDir + "/StreamingAssets/Mods"
+)
+
 type DirService struct {
-	GameDir string `json:"game_dir"`
-	ModDir  string `json:"mod_dir"`
+	GameDir string `json:"gameDir"`
 }
 
-const mvz2ExeName = ""
-const mvz2DataFolder = "MinecraftVSZombies2_Data"
+func NewDirService() *DirService {
+	return &DirService{}
+}
 
+// region 前端API
+
+// GetGameDir 仅返回MVZ2**根目录**，未设置时为空。
 func (d *DirService) GetGameDir() string {
 	return d.GameDir
 }
 
-func (d *DirService) SetGameDir(path string) error {
-	if !isGameDir(path, mvz2DataFolder) {
-		return errors.New("找不到MVZ2数据文件夹")
+func (d *DirService) GetModDllDir() string {
+	return d.joinGameDir(modDllDir)
+}
+
+// GetModResourceDir 返回mod资源目录的绝对路径
+func (d *DirService) GetModResourceDir() string {
+	return d.joinGameDir(modResourceDir)
+}
+func (d *DirService) SelectGameDir() error {
+	exePath, err := application.Get().Dialog.OpenFile().
+		SetTitle("选择MVZ2游戏主程序").
+		PromptForSingleSelection()
+	if err != nil {
+		slog.Error("select mvz2 exe failed", "err", err)
+		return errors.New("打开文件选择器失败: " + err.Error())
 	}
-	d.GameDir = path
+	if exePath == "" {
+		return nil // 用户取消
+	}
+
+	gameDir := resolveGameDir(exePath)
+	if gameDir == "" {
+		slog.Warn("selected exe has no data folder beside it", "exePath", exePath)
+		return errors.New("所选主程序旁未找到 " + mvz2DataDir + " 文件夹，请确认选择的是MVZ2游戏目录下的主程序")
+	}
+
+	d.GameDir = gameDir
+	slog.Info("game dir set via selection", "gameDir", d.GameDir)
 	return nil
 }
 
-// CheckGameDir() 检查根目录是否为MVZ2目录，main.go初始化用
 func (d *DirService) CheckGameDir() {
-
-	currentDir, err := os.Getwd()
+	exePath, err := os.Executable()
 	if err != nil {
-		slog.Error("get current app dir", "err", err)
+		slog.Error("get executable path failed", "err", err)
 		return
 	}
-	if isGameDir(currentDir, mvz2DataFolder) {
-		d.GameDir = currentDir
-		slog.Info("set game dir", "current d.GameDir", d.GameDir)
+	appDir := filepath.Dir(exePath)
+	if isGameDir(appDir) {
+		d.GameDir = appDir
+		slog.Info("game dir auto detected", "gameDir", d.GameDir)
 		return
 	}
-
+	slog.Info("game dir not detected beside executable", "appDir", appDir)
 }
 
-func (d *DirService) GetGameDirFromDialogSelection(pathWithMVZ2 string) string {
-	p, _ := path.Split(pathWithMVZ2)
-	if !isGameDir(mvz2DataFolder, p) {
-		return ""
-	}
-	return p
-}
+// region ModService预留
 
-func (d *DirService) GetModDir() string {
+// EnsureModResourceDir 确保mod资源目录存在，不存在则创建。
+func (d *DirService) EnsureModResourceDir() error {
 	if d.GameDir == "" {
-		slog.Warn("gameDir is empty!")
-		return ""
+		return errors.New("游戏目录未设置，无法创建mod资源目录")
 	}
+	if err := os.MkdirAll(d.GetModResourceDir(), 0o755); err != nil {
+		slog.Error("create mod resource dir failed", "dir", d.GetModResourceDir(), "err", err)
+		return errors.New("创建mod资源目录失败: " + err.Error())
+	}
+	return nil
+}
+func (d *DirService) HasGameDirSet() bool {
+	return d.GameDir != ""
+}
 
-	tryPath := path.Join(d.GameDir, "BepInEx", "plugins")
-	info, err := os.Stat(tryPath)
-	if err != nil {
-		slog.Warn("ModDir dose not exists!", "err", err, "dir", tryPath)
+// region PRIVATE
+
+// joinGameDir 拼接游戏根目录与相对路径，未设置游戏目录时返回空串。
+func (d *DirService) joinGameDir(rel string) string {
+	if d.GameDir == "" {
 		return ""
 	}
-	if info.IsDir() {
-		d.ModDir = tryPath
-		return d.ModDir
+	return filepath.Join(d.GameDir, filepath.FromSlash(rel))
+}
+
+// resolveGameDir 由主程序exe路径推导游戏根目录，不是合法游戏目录时返回空串。
+func resolveGameDir(exePath string) string {
+	gameDir := filepath.Dir(exePath)
+	if isGameDir(gameDir) {
+		return gameDir
 	}
 	return ""
 }
 
-// SelectGameDir() 处理前端`设置页MVZ2路径选择按钮`的事件
-func (d *DirService) SelectGameDir() error {
-	path, err := application.Get().Dialog.OpenFile().SetTitle("选择MVZ2游戏主程序").PromptForSingleSelection()
-	if err != nil || path == "" {
-		slog.Error("selecting mvz2 game", "err", err, "path", path)
-		return errors.New("未找到主程序或用户取消选择")
-	}
-
-	pS := d.GetGameDirFromDialogSelection(path)
-	err = d.SetGameDir(pS)
+// isGameDir 判断目录下是否存在MVZ2数据文件夹。
+func isGameDir(dir string) bool {
+	info, err := os.Stat(filepath.Join(dir, mvz2DataDir))
 	if err != nil {
-		slog.Error("setting game dir via selection", "err", err)
-		return err
-	}
-
-	slog.Info("set game file", "current d.GameDir", d.GameDir)
-	return nil
-}
-
-// isGameDir 接收dataFolder和已有路径为参数，确认是否为MVZ2目录
-//
-// 若传入路径 **包含** dataFolder则返回真
-func isGameDir(dataFolder, path string) bool {
-	info, err := os.Stat(filepath.Join(path, dataFolder))
-	// 没出错，存在这个文件，
-	if err == nil {
-
-	}
-	// 出错，不存在此文件/目录，不是MVZ2目录
-	if err != nil {
-		slog.Warn("scanning game data folder", "err", err)
 		return false
 	}
 	return info.IsDir()

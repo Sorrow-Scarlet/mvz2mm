@@ -9,29 +9,27 @@
   import ItemContent from "#lib/components/ui/item/item-content.svelte";
   import ItemHeader from "#lib/components/ui/item/item-header.svelte";
   import Item from "#lib/components/ui/item/item.svelte";
+  import TooltipContent from "#lib/components/ui/tooltip/tooltip-content.svelte";
+  import TooltipTrigger from "#lib/components/ui/tooltip/tooltip-trigger.svelte";
+  import Tooltip from "#lib/components/ui/tooltip/tooltip.svelte";
   import { Folder } from "@lucide/svelte";
   import { onMount } from "svelte";
+  import { toast } from "svelte-sonner";
   import {
     GetGameDir,
     SelectGameDir,
   } from "../../../bindings/mvz2mm/internal/settings/dirservice";
-  import { toast } from "svelte-sonner";
-  import Tooltip from "#lib/components/ui/tooltip/tooltip.svelte";
-  import TooltipTrigger from "#lib/components/ui/tooltip/tooltip-trigger.svelte";
-  import TooltipContent from "#lib/components/ui/tooltip/tooltip-content.svelte";
 
   let mvz2Path = $state("...");
 
   const refreshPathState = () => {
     GetGameDir()
       .then((d) => {
-        mvz2Path = d;
-      })
-      .then(() => {
-        if (mvz2Path == "") {
+        if (d == "") {
           mvz2Path = "请手动选择";
           toast.warning(`无法自动查找MVZ2路径，请手动选择`);
         }
+        mvz2Path = d;
       })
       .catch((e) => {
         toast.error(`无法获取MVZ2目录，${e}`);

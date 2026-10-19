@@ -5,8 +5,16 @@
 > [!IMPORTANT]
 > 压缩包内任何BepInEx文件夹以外的文件夹将**原封不动**的安装到MVZ2根目录下！
 
+- 不管你是什么包，.pack .pck .mvz2pack .mvz2 .mvz2mod .zip，都给我老老实实用zip的压缩算法
+- 即便本MOD管理器允许嵌套一层文件夹打包，依旧建议你的压缩包不要嵌套文件夹
 - 对于单个的普通mod, 应存在manifest.json
 - 对于整合包mod,应存在mvz2pack.json
+
+## 理想结构
+
+- manifest.json
+- /BepInEx/plugins/你的mod.dll
+- /MinecraftVSZombies2_Data/StreamingAssets/Mods/你的mod资源文件夹名
 
 ## manifest.json
 

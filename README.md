@@ -3,6 +3,13 @@
 
 A recreational and work-in-progress MVZ2 Mod Manager
 
+## Supported Platform
+
+- [x] Win11
+- [x] Win10 with webview2
+- [ ] macOS
+- [ ] linux
+
 ## Tech Stack
 
 ### Language
@@ -23,8 +30,7 @@ A recreational and work-in-progress MVZ2 Mod Manager
 - [ ] Enable & disable
 - [ ] Install & uninstall
 - [ ] Network resource
-- [ ] Darkmode
-- [ ] File-association
+- [x] Darkmode
 
 ## License
 
