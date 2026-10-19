@@ -44,18 +44,16 @@ func init() {
 
 func main() {
 
-	// Create a new Wails application by providing the necessary options.
-	// Variables 'Name' and 'Description' are for application metadata.
-	// 'Assets' configures the asset server with the 'FS' variable pointing to the frontend files.
-	// 'Bind' is a list of Go struct instances. The frontend has access to the methods of these instances.
-	// 'Mac' options tailor the application when running an macOS.
+	dirService := &settings.DirService{}
+	dirService.CheckGameDir()
+
 	app := application.New(application.Options{
 		Name:        "mvz2mm",
 		Description: "A MVZ2 Mod Manager",
 		Services: []application.Service{
 			application.NewService(&platform.PlatformService{}),
 			application.NewService(&modmanage.ModService{}),
-			application.NewService(&settings.DirService{}),
+			application.NewService(dirService),
 			application.NewService(&settings.VersionService{}),
 		},
 		Assets: application.AssetOptions{

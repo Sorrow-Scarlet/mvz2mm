@@ -1,5 +1,6 @@
 <script lang="ts">
   import PageHint from "#lib/components/mvz2mm/PageHint.svelte";
+  import Button from "#lib/components/ui/button/button.svelte";
   import CardContent from "#lib/components/ui/card/card-content.svelte";
   import CardHeader from "#lib/components/ui/card/card-header.svelte";
   import CardTitle from "#lib/components/ui/card/card-title.svelte";
@@ -8,11 +9,42 @@
   import ItemContent from "#lib/components/ui/item/item-content.svelte";
   import ItemHeader from "#lib/components/ui/item/item-header.svelte";
   import Item from "#lib/components/ui/item/item.svelte";
+  import { Folder } from "@lucide/svelte";
   import { onMount } from "svelte";
+  import {
+    GetGameDir,
+    SelectGameDir,
+  } from "../../../bindings/mvz2mm/internal/settings/dirservice";
+  import { toast } from "svelte-sonner";
 
-  let mvz2Path = $state("None");
+  let mvz2Path = $state("...");
 
-  onMount(() => {});
+  const refreshPathState = () => {
+    GetGameDir()
+      .then((d) => {
+        mvz2Path = d;
+      })
+      .then(() => {
+        if (mvz2Path == "") {
+          mvz2Path = "请手动选择";
+          toast.warning(`无法自动查找MVZ2路径，请手动选择`);
+        }
+      })
+      .catch((e) => {
+        toast.error(`无法获取MVZ2目录，${e}`);
+      });
+  };
+  const selectGameDir = () => {
+    SelectGameDir()
+      .then(() => {
+        refreshPathState();
+      })
+      .catch((e) => {
+        toast.error(`无法选择指定目录，${e}`);
+      });
+  };
+
+  onMount(refreshPathState);
 </script>
 
 <div id="settings-container " class="flex flex-col p-6 gap-4">
@@ -26,7 +58,12 @@
         <ItemContent class="select-none"
           ><ItemHeader>MVZ2路径</ItemHeader>
         </ItemContent>
-        <ItemActions>{mvz2Path}</ItemActions>
+        <ItemContent>{mvz2Path}</ItemContent>
+        <ItemActions>
+          <Button variant="outline" onclick={selectGameDir}>
+            <Folder />
+          </Button>
+        </ItemActions>
       </Item>
     </CardContent>
   </Card>
