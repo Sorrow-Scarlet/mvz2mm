@@ -16,6 +16,9 @@
     SelectGameDir,
   } from "../../../bindings/mvz2mm/internal/settings/dirservice";
   import { toast } from "svelte-sonner";
+  import Tooltip from "#lib/components/ui/tooltip/tooltip.svelte";
+  import TooltipTrigger from "#lib/components/ui/tooltip/tooltip-trigger.svelte";
+  import TooltipContent from "#lib/components/ui/tooltip/tooltip-content.svelte";
 
   let mvz2Path = $state("...");
 
@@ -37,6 +40,9 @@
   const selectGameDir = () => {
     SelectGameDir()
       .then(() => {
+        if (mvz2Path == "") {
+          toast.info("已取消选择");
+        }
         refreshPathState();
       })
       .catch((e) => {
@@ -60,9 +66,16 @@
         </ItemContent>
         <ItemContent>{mvz2Path}</ItemContent>
         <ItemActions>
-          <Button variant="outline" onclick={selectGameDir}>
-            <Folder />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger>
+              {#snippet child({ props })}
+                <Button {...props} variant="outline" onclick={selectGameDir}>
+                  <Folder />
+                </Button>
+              {/snippet}
+            </TooltipTrigger>
+            <TooltipContent>打开文件选择器</TooltipContent>
+          </Tooltip>
         </ItemActions>
       </Item>
     </CardContent>

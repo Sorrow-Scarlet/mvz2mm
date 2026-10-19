@@ -7,6 +7,7 @@
   import SidebarProvider from "#lib/components/ui/sidebar/sidebar-provider.svelte";
   import { Toaster } from "svelte-sonner";
   import { isDark } from "#lib/stores/dark.svelte.ts";
+  import TooltipProvider from "#lib/components/ui/tooltip/tooltip-provider.svelte";
   let { children }: LayoutProps = $props();
 
   $effect(() => {
@@ -21,11 +22,13 @@
   >
     <Titlebar />
     <div id="window-content" class="flex min-h-0 flex-1 overflow-hidden">
-      <Sidebar />
-      <main class="min-w-0 flex-1 overflow-y-auto">
-        <Toaster />
-        {@render children()}
-      </main>
+      <TooltipProvider>
+        <Sidebar />
+        <main class="min-w-0 flex-1 overflow-y-auto">
+          <Toaster />
+          {@render children()}
+        </main>
+      </TooltipProvider>
     </div>
   </div>
 </SidebarProvider>

@@ -15,6 +15,9 @@
     currentDark,
     darkOptions,
   } from "#lib/stores/dark.svelte.ts";
+  import Tooltip from "#lib/components/ui/tooltip/tooltip.svelte";
+  import TooltipTrigger from "#lib/components/ui/tooltip/tooltip-trigger.svelte";
+  import TooltipContent from "#lib/components/ui/tooltip/tooltip-content.svelte";
 
   let version = $state("0.0.0");
 
@@ -79,13 +82,22 @@
             </button>
           {/snippet}
         </SidebarMenuButton>
-        <SidebarMenuButton
-          isActive={false}
-          onclick={copyToClipboard}
-          class="flex"
-        >
-          <span>{version}</span>
-        </SidebarMenuButton>
+
+        <Tooltip>
+          <TooltipTrigger>
+            {#snippet child({ props })}
+              <SidebarMenuButton
+                {...props}
+                isActive={false}
+                onclick={copyToClipboard}
+                class="flex"
+              >
+                <span>{version}</span>
+              </SidebarMenuButton>
+            {/snippet}
+          </TooltipTrigger>
+          <TooltipContent>点击复制版本号</TooltipContent>
+        </Tooltip>
       </SidebarMenuItem>
     </SidebarMenu>
   </SidebarFooter>
