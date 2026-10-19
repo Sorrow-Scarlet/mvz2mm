@@ -9,3 +9,6 @@ build/ios/xcode/overlay.json
 build/ios/xcode/gen/
 build/android/overlay.json
 build/android/gen/
+
+# wails3 dev 命令默认从项目根目录运行，因此忽略此目录
+/logs
