@@ -24,7 +24,7 @@
     <div id="window-content" class="flex min-h-0 flex-1 overflow-hidden">
       <TooltipProvider>
         <Sidebar />
-        <main class="min-w-0 flex-1 overflow-y-auto">
+        <main class="min-w-0 flex-1 overflow-y-auto" data-file-drop-target>
           <Toaster />
           {@render children()}
         </main>

@@ -51,9 +51,10 @@ func main() {
 		Name:        "mvz2mm",
 		Description: "A MVZ2 Mod Manager",
 		Services: []application.Service{
+			application.NewService(dirService),
 			application.NewService(&platform.PlatformService{}),
 			application.NewService(&modmanage.ModService{}),
-			application.NewService(dirService),
+			application.NewService(&modmanage.GameService{}),
 			application.NewService(&settings.VersionService{}),
 		},
 		Assets: application.AssetOptions{
@@ -72,8 +73,9 @@ func main() {
 	app.Window.NewWithOptions(application.WebviewWindowOptions{
 		Title: "MVZ2 Mod Manager",
 		// Window sized to the golden ratio (1000 / 618 ≈ 1.618).
-		Width:  1000,
-		Height: 618,
+		Width:          1000,
+		Height:         618,
+		EnableFileDrop: true,
 		Mac: application.MacWindow{
 			InvisibleTitleBarHeight: 50,
 			Backdrop:                application.MacBackdropTranslucent,
