@@ -10,6 +10,11 @@ import (
 )
 
 const (
+	ExportmodDllDir   = modDllDir
+	Exportmvz2DataDir = mvz2DataDir
+)
+
+const (
 	mvz2DataDir    = "MinecraftVSZombies2_Data"
 	modDllDir      = "BepInEx/plugins"
 	modResourceDir = mvz2DataDir + "/StreamingAssets/Mods"
