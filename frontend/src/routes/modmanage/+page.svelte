@@ -148,7 +148,7 @@
         {@render modItem(info)}
       {:else}
         <p class="text-muted-foreground text-sm">
-          {search ? "没有匹配的启用mod" : "暂无启用mod，拖拽zip包到窗口安装"}
+          {search ? "没有匹配的启用mod" : "暂无启用mod"}
         </p>
       {/each}
     </CardContent>
