@@ -1,5 +1,4 @@
 {
-  "packageManager": "pnpm@12.11.2",
   "name": "mvz2mm",
   "private": true,
   "version": "0.0.1",
