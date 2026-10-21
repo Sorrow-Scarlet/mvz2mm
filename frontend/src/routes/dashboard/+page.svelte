@@ -7,40 +7,14 @@
   import Card from "#lib/components/ui/card/card.svelte";
   import { onMount } from "svelte";
   import { toast } from "svelte-sonner";
-  import {
-    GetModEnabled,
-    GetModTotal,
-  } from "../../../bindings/mvz2mm/internal/modmanage/modservice";
+  import { GetModStats } from "../../../bindings/mvz2mm/internal/modmanage/modservice";
 
-  type Status = "loading" | "ok" | "error";
-
-  let modTotal = $state<number | null>(null);
-  let modTotalStatus = $state<Status>("loading");
-  let modEnabled = $state<number | null>(null);
-  let modEnabledStatus = $state<Status>("loading");
-
-  onMount(() => {
-    GetModTotal()
-      .then((c) => {
-        modTotal = c;
-        modTotalStatus = "ok";
-      })
-      .catch((e) => {
-        modTotalStatus = "error";
-        toast.error(`无法获取总Mod数: ${e}`);
-      });
-    GetModEnabled()
-      .then((c) => {
-        modEnabled = c;
-        modEnabledStatus = "ok";
-      })
-      .catch((e) => {
-        modEnabledStatus = "error";
-        toast.error(`无法获取已启用Mod数: ${e}`);
-      });
+  let stats = $state({ total: 0, enabled: 0 });
+  onMount(async () => {
+    stats = await GetModStats();
   });
 
-  let mvz2Info = $state("Empty");
+  let mvz2Info = $state("...");
   const mvz2InfoClicked = () => {
     navigator.clipboard.writeText(mvz2Info);
     toast.info("已成功复制MVZ2信息");
@@ -52,19 +26,13 @@
   <div id="status-container" class="flex flex-row gap-4 select-none">
     <Card class="w-full">
       <CardHeader>
-        <CardTitle
-          >{modTotalStatus === "error" ? "ERR" : (modTotal ?? "...")}</CardTitle
-        >
+        <CardTitle>{stats.total}</CardTitle>
         <CardDescription>总Mod数</CardDescription>
       </CardHeader>
     </Card>
     <Card class="w-full ">
       <CardHeader>
-        <CardTitle
-          >{modEnabledStatus === "error"
-            ? "ERR"
-            : (modEnabled ?? "...")}</CardTitle
-        >
+        <CardTitle>{stats.enabled}</CardTitle>
         <CardDescription>已启用</CardDescription>
       </CardHeader>
     </Card>
