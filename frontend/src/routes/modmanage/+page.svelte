@@ -81,13 +81,9 @@
     onclick={() => {
       handleInstall(installing);
     }}
-    disabled={installing}
   >
-    {#if installing}
-      <Loader class="size-4 animate-spin" />
-    {:else}
-      <PackagePlus class="size-4" />
-    {/if}
+    <PackagePlus class="size-4" />
+
     安装 Mod
   </Button>
   {#snippet modItem(info: ModInfo)}
