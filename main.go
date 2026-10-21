@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
+	"github.com/wailsapp/wails/v3/pkg/events"
 )
 
 //go:embed all:frontend/build
@@ -46,14 +47,14 @@ func main() {
 
 	dirService := &settings.DirService{}
 	dirService.CheckGameDir()
-
+	modService := modmanage.NewModService(dirService)
 	app := application.New(application.Options{
 		Name:        "mvz2mm",
 		Description: "A MVZ2 Mod Manager",
 		Services: []application.Service{
 			application.NewService(dirService),
 			application.NewService(&platform.PlatformService{}),
-			application.NewService(&modmanage.ModService{}),
+			application.NewService(modService),
 			application.NewService(&modmanage.GameService{}),
 			application.NewService(&settings.VersionService{}),
 		},
@@ -70,7 +71,7 @@ func main() {
 	// 'Mac' options tailor the window when running on macOS.
 	// 'BackgroundColour' is the background colour of the window.
 	// 'URL' is the URL that will be loaded into the webview.
-	app.Window.NewWithOptions(application.WebviewWindowOptions{
+	window := app.Window.NewWithOptions(application.WebviewWindowOptions{
 		Title: "MVZ2 Mod Manager",
 		// Window sized to the golden ratio (1000 / 618 ≈ 1.618).
 		Width:          1000,
@@ -90,9 +91,16 @@ func main() {
 		},
 	})
 
+	window.OnWindowEvent(events.Common.WindowFilesDropped, func(e *application.WindowEvent) {
+		files := e.Context().DroppedFiles()
+		slog.Info("file dropped", "files", files)
+		application.Get().Event.Emit("files-dropped", files)
+	})
+
 	err := app.Run()
 	if err != nil {
 		slog.Error("Main Thread", "err", err)
 		return
 	}
+
 }
