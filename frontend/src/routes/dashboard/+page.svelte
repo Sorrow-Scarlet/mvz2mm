@@ -43,10 +43,4 @@
     </CardHeader>
     <CardContent>{mvz2Info}</CardContent>
   </Card>
-  <Card class="w-full">
-    <CardHeader>
-      <CardTitle>快捷目录</CardTitle>
-    </CardHeader>
-    <CardContent></CardContent>
-  </Card>
 </div>

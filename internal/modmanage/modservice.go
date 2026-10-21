@@ -14,6 +14,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/wailsapp/wails/v3/pkg/application"
 )
 
 const (
@@ -112,12 +114,40 @@ type PendingFile struct {
 
 // region 前端
 
-func (m *ModService) InstallMod(zipPath string) (*ModInfo, error) {
+// InstallResult 一次批量安装的汇总
+type InstallResult struct {
+	Installed []ModInfo `json:"installed"`
+	Failed    []string  `json:"failed"` // "文件名: 错误信息"
+}
+
+// InstallModDialog 打开原生文件选择器（可多选），逐个安装
+func (m *ModService) InstallModDialog() (*InstallResult, error) {
 	if !m.dir.HasGameDirSet() {
 		return nil, errors.New("请先在设置页选择游戏目录")
 	}
-	if !strings.EqualFold(filepath.Ext(zipPath), ".zip") {
-		return nil, errors.New("仅支持zip格式的mod包")
+	paths, err := application.Get().Dialog.OpenFile().
+		SetTitle("选择Mod压缩包").
+		PromptForMultipleSelection()
+	if err != nil {
+		return nil, errors.New("打开文件选择器失败: " + err.Error())
+	}
+	if len(paths) == 0 {
+		return nil, nil // 用户取消
+	}
+	res := &InstallResult{}
+	for _, p := range paths {
+		info, err := m.InstallMod(p)
+		if err != nil {
+			res.Failed = append(res.Failed, filepath.Base(p)+": "+err.Error())
+			continue
+		}
+		res.Installed = append(res.Installed, *info)
+	}
+	return res, nil
+}
+func (m *ModService) InstallMod(zipPath string) (*ModInfo, error) {
+	if !m.dir.HasGameDirSet() {
+		return nil, errors.New("请先在设置页选择游戏目录")
 	}
 
 	zr, err := zip.OpenReader(zipPath)

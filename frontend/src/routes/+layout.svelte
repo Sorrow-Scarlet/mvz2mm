@@ -11,15 +11,11 @@
   import { Toaster } from "svelte-sonner";
   import { isDark } from "#lib/stores/dark.svelte.ts";
   import TooltipProvider from "#lib/components/ui/tooltip/tooltip-provider.svelte";
-  import { onMount } from "svelte";
-  import { setupModDropZone } from "#lib/stores/drop.svelte.ts";
   let { children }: LayoutProps = $props();
 
   $effect(() => {
     document.documentElement.classList.toggle("dark", isDark());
   });
-  let mainElem: HTMLElement;
-  onMount(() => setupModDropZone(mainElem));
 </script>
 
 <SidebarProvider>
@@ -35,7 +31,6 @@
           data-file-drop-target
           class="min-w-0 flex-1 overflow-y-auto [&.file-drop-target-active]:ring-2 [&.file-drop-target-active]:ring-primary [&.file-drop-target-active]:bg-primary/5
     data-[installing=true]:pointer-events-none data-[installing=true]:opacity-60"
-          bind:this={mainElem}
         >
           <Toaster />
           {@render children()}

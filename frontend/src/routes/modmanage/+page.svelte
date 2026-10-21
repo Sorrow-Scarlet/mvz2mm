@@ -12,7 +12,14 @@
   import ItemHeader from "#lib/components/ui/item/item-header.svelte";
   import Item from "#lib/components/ui/item/item.svelte";
   import { modsStore } from "#lib/stores/mod.svelte.ts";
-  import { Badge, PackageOpen, Power, Trash, Trash2 } from "@lucide/svelte";
+  import {
+    Badge,
+    Loader,
+    PackageOpen,
+    PackagePlus,
+    Power,
+    Trash,
+  } from "@lucide/svelte";
   import { onMount } from "svelte";
   import { toast } from "svelte-sonner";
   import type { ModInfo } from "../../../bindings/mvz2mm/internal/modmanage/models";
@@ -28,6 +35,8 @@
     AlertDialogTrigger,
   } from "#lib/components/ui/alert-dialog/index.ts";
   import CardDescription from "#lib/components/ui/card/card-description.svelte";
+  import { InstallModDialog } from "../../../bindings/mvz2mm/internal/modmanage/modservice";
+  import { handleInstall } from "#lib/stores/drop.svelte.ts";
   let search = $state("");
   onMount(() => modsStore.refresh());
 
@@ -62,12 +71,25 @@
       toast.error(err instanceof Error ? err.message : String(err));
     }
   };
+  let installing = $state(false);
 </script>
 
 <div class="flex flex-col p-6 gap-4">
-  <PageHint title="Mod 管理" hint="拖放，启用，删除"></PageHint>
-  <Input placeholder="搜索Mod名称..." />
-
+  <PageHint title="Mod 管理" hint="缅怀在天国的拖拽安装功能..."></PageHint>
+  <Input placeholder="搜索Mod名称..." bind:value={search} />
+  <Button
+    onclick={() => {
+      handleInstall(installing);
+    }}
+    disabled={installing}
+  >
+    {#if installing}
+      <Loader class="size-4 animate-spin" />
+    {:else}
+      <PackagePlus class="size-4" />
+    {/if}
+    安装 Mod
+  </Button>
   {#snippet modItem(info: ModInfo)}
     <Item variant="outline">
       <ItemContent class="select-none">
@@ -123,9 +145,7 @@
 
   <Card>
     <CardHeader>
-      <CardTitle
-        >已启用 <Badge variant="secondary">{enabled.length}</Badge></CardTitle
-      >
+      <CardTitle>已启用</CardTitle>
     </CardHeader>
     <CardContent class="flex flex-col gap-2">
       {#each enabled as info (info.id)}
@@ -140,9 +160,7 @@
 
   <Card>
     <CardHeader>
-      <CardTitle
-        >已禁用 <Badge variant="secondary">{disabled.length}</Badge></CardTitle
-      >
+      <CardTitle>已禁用</CardTitle>
     </CardHeader>
     <CardContent class="flex flex-col gap-2">
       {#each disabled as info (info.id)}
@@ -154,35 +172,4 @@
       {/each}
     </CardContent>
   </Card>
-
-  {#if modsStore.unmanaged.length > 0}
-    <Card>
-      <CardHeader>
-        <CardTitle>
-          未托管
-          <Badge variant="outline">
-            <PackageOpen class="size-3" />
-            {modsStore.unmanaged.length}
-          </Badge>
-        </CardTitle>
-        <CardDescription
-          >plugins目录下存在非本管理器安装的dll，仅展示</CardDescription
-        >
-      </CardHeader>
-      <CardContent class="flex flex-col gap-2">
-        {#each modsStore.unmanaged as info (info.id)}
-          <Item variant="outline">
-            <ItemContent>
-              <ItemHeader>{info.name}</ItemHeader>
-              <ItemDescription
-                >{info.id} · {info.enabled
-                  ? "启用中"
-                  : "已禁用"}</ItemDescription
-              >
-            </ItemContent>
-          </Item>
-        {/each}
-      </CardContent>
-    </Card>
-  {/if}
 </div>

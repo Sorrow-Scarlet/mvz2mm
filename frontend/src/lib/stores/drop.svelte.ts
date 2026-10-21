@@ -1,39 +1,22 @@
-import { Events } from "@wailsio/runtime";
 import { toast } from "svelte-sonner";
-import { InstallMod } from "../../../bindings/mvz2mm/internal/modmanage/modservice";
-import { refreshModList } from "./mod";
+import { InstallModDialog } from "../../../bindings/mvz2mm/internal/modmanage/modservice";
+import { modsStore } from "./mod.svelte";
 
-const DropEvent = "files-dropped";
-let installing = false;
-
-export function setupModDropZone(mainEl: HTMLElement) {
-  Events.On(DropEvent, async (ev: any) => {
-    const raw = ev?.data;
-    const paths: string[] = Array.isArray(raw?.[0]) ? raw[0] : (raw ?? []);
-    if (paths.length === 0) return;
-
-    if (installing) {
-      toast.error("正在安装上一个mod，请稍候");
-      return;
+export const handleInstall = async (installing: boolean) => {
+  installing = true;
+  try {
+    const res = await InstallModDialog(); // 来自 bindings
+    if (!res) return; // 用户取消
+    if (res.installed.length > 0) {
+      toast.success(`已安装 ${res.installed.length} 个mod`, {
+        description: res.installed.map((m) => m.name).join("、"),
+      });
     }
-
-    installing = true;
-    mainEl.dataset.installing = "true";
-    try {
-      for (const p of paths) {
-        try {
-          const info = await InstallMod(p);
-          toast.success(`安装成功：${info?.name ?? p}`);
-          await refreshModList();
-        } catch (err) {
-          toast.error(
-            `安装失败：${err instanceof Error ? err.message : String(err)}`,
-          );
-        }
-      }
-    } finally {
-      installing = false;
-      delete mainEl.dataset.installing;
-    }
-  });
-}
+    for (const f of res.failed) toast.error(f);
+    await modsStore.refresh();
+  } catch (err) {
+    toast.error(err instanceof Error ? err.message : String(err));
+  } finally {
+    installing = false;
+  }
+};
