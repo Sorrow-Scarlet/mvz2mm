@@ -24,11 +24,11 @@ A recreational and work-in-progress MVZ2 Mod Manager
 
 ## Feature
 
-- [ ] Finished GUI
+- [x] Finished GUI
 - [ ] Dashboard
 - [ ] Common dir shortcut
-- [ ] Enable & disable
-- [ ] Install & uninstall
+- [x] Enable & disable
+- [x] Install & uninstall
 - [ ] Network resource
 - [x] Darkmode
 
